@@ -1,0 +1,108 @@
+﻿@model IEnumerable<MvcMusicStore.Models.Album>
+<!--Custom HTML Helper - Truncate Strings if too long-->
+@helper Truncate(string input, int length)
+{
+    if (input.Length <= length)
+    { 
+    @input
+    }
+    else
+    { 
+    @input.Substring(0, length)<text>...</text>
+    }
+}
+
+<!--Title-->
+@{
+    ViewBag.Title = "Index"; 
+}
+
+<!--Register Kendo UI using CDN-->
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+
+    <link href="https://kendo.cdn.telerik.com/2021.2.511/styles/kendo.common.min.css" rel="stylesheet" />
+    <link href="https://kendo.cdn.telerik.com/2021.2.511/styles/kendo.default.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2021.2.511/js/kendo.all.min.js"></script>
+</head>
+
+
+<!--Grid-->
+<div>
+    <table id="grid">
+        <tr>
+            <!--Headers-->
+            <th>Artist
+            </th>
+            <th>Genre
+            </th>
+            <th>Title
+            </th>
+            <th>Price
+            </th>
+        </tr>
+
+        <!--Display details for every album-->
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Truncate(item.Artist.Name, 25)
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.Genre.Name)
+                </td>
+                <td>@Truncate(item.Title, 25)
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.Price)
+                </td>
+            </tr>        
+        }
+    </table>
+
+
+    
+    <!--Initialize Grid-->
+    <script>
+
+        //Delete selected row
+        function deleteRows() {
+            var gridAdditive = $("#grid").data("kendoGrid");
+            gridAdditive.selectedKeyNames().forEach(function (x) {
+                var item = gridAdditive.dataSource.get(+x);
+                delete gridAdditive._selectedIds[+x]
+                gridAdditive.dataSource.remove(item);
+            });
+        }
+
+        $(document).ready(function () {
+
+            $("#grid").kendoGrid({
+
+                scrollable: true,
+                //Sortable
+                sortable: true,
+                //Filterable
+                filterable: true,
+                //Pageable
+                pageable: true,
+                pageable: { pageSizes: [20, 40, 60, 80, 100, "All"] },
+                editable: true,
+                toolbar: [
+                    { name: "efresh", text: "Refresh" },
+                    { name: "create", text: "Add" },
+                    //{ name: "destroy", text: "Delete" },
+                    { template: '<a class="k-button" onclick="deleteRows()">Delete</a>' },
+                    { name: "save", text: "Submit" },
+                ],
+                batch: false,
+                editable: "inline",
+                //Selectable - single mode
+                selectable: "row",
+
+
+            });
+        });
+    </script>
+</div>
+
